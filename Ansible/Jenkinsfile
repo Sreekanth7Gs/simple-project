@@ -26,16 +26,18 @@ pipeline {
         stage('source-code-analysis') {
             environment {
                 scannerHome = tool 'sonar-qube'
-                 SONAR_PROJECT_KEY = 'sreekanth-valaxy-key_twittertrend-sree-valaxy' // Replace with your project's key
-                 SONAR_ORGANIZATION = 'sreekanth-valaxy-key' 
+                SONAR_PROJECT_KEY = 'sreekanth-valaxy-key_twittertrend-sree-valaxy' // Replace with your project's key
+                SONAR_ORGANIZATION = 'sreekanth-valaxy-key' 
             }
             steps {
-                withSonarQubeEnv('sonar-qube') {
-                    ${scannerHome}/bin/sonar-scanner -X \
-                      -Dsonar.projectKey=$SONAR_PROJECT_KEY \
-                     -Dsonar.organization=$SONAR_ORGANIZATION
-
-                    
+                script {
+                    withSonarQubeEnv('sonar-qube') {
+                        sh """
+                        ${scannerHome}/bin/sonar-scanner -X \\
+                        -Dsonar.projectKey=$SONAR_PROJECT_KEY \\
+                        -Dsonar.organization=$SONAR_ORGANIZATION
+                        """
+                    }
                 }
             }
         }
