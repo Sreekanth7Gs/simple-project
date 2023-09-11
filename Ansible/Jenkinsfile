@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build on Slave') {
+            agent {
+                label 'maven'
+            }
+            steps {
+                sh 'echo "Building on the specified slave"'
+            }
+        }
+        stage('code-clone') {
+            steps {
+                git 'https://github.com/gollasreekanth/hello-world.git'
+            }
+        }
+        stage('Maven Build') {
+            environment {
+                PATH = "/opt/apache-maven-3.9.4/bin:$PATH"
+            }
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+        stage('source-code-analysis') {
+            environment {
+                scannerHome = tool 'sonar-qube'
+                 SONAR_PROJECT_KEY = 'sreekanth-valaxy-key_twittertrend-sree-valaxy' // Replace with your project's key
+                 SONAR_ORGANIZATION = 'sreekanth-valaxy-key' // Replace with yo
+            }
+            steps {
+                withSonarQubeEnv('sonar-qube') {
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }
+            }
+        }
+    }
+}
